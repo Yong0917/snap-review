@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
     const geminiPromise = ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
     const timeoutPromise = new Promise<never>((_, reject) =>
