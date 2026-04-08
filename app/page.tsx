@@ -13,14 +13,14 @@ const steps = [
   {
     num: "01",
     icon: Camera,
-    title: "영수증 촬영",
-    desc: "카메라로 찍거나 갤러리에서 영수증을 선택하세요",
+    title: "사진 업로드",
+    desc: "음식, 공간, 제품, 소품 등 원하는 사진을 선택하세요",
   },
   {
     num: "02",
     icon: ScanLine,
     title: "자동 분석",
-    desc: "AI가 가게명·메뉴·금액을 자동으로 읽어냅니다",
+    desc: "AI가 사진의 핵심 대상과 분위기를 읽어냅니다",
   },
   {
     num: "03",
@@ -128,11 +128,11 @@ export default function HomePage() {
             AI 리뷰 자동 생성
           </p>
           <h1 className="font-serif font-bold text-[2.75rem] leading-[1.12] tracking-tight text-foreground mb-3">
-            영수증 찍으면<br />
+            사진만 올리면<br />
             <span className="text-primary">리뷰 완성.</span>
           </h1>
           <p className="text-muted-foreground text-[0.9rem] leading-relaxed">
-            어떤 가게든 영수증만 있으면 OK<br />
+            음식 · 공간 · 제품 · 소품 어떤 사진이든 OK<br />
             네이버 · 카카오 · 구글 어디에나 붙여넣기
           </p>
         </section>
@@ -170,7 +170,7 @@ export default function HomePage() {
               </div>
 
               <p className="font-semibold text-[15px] text-foreground mb-1">
-                {dragging ? "여기에 놓으세요" : "영수증을 올려주세요"}
+                {dragging ? "여기에 놓으세요" : "사진을 올려주세요"}
               </p>
               <p className="text-sm text-muted-foreground mb-5">
                 {dragging ? "파일을 여기 드롭하세요" : "드래그하거나 눌러서 선택"}
@@ -190,7 +190,7 @@ export default function HomePage() {
                   disabled={converting}
                   className="bg-background border border-border rounded-[10px] px-5 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors disabled:opacity-60 disabled:pointer-events-none"
                 >
-                  카메라 촬영
+                  바로 촬영
                 </button>
               </div>
             </div>
@@ -255,8 +255,8 @@ export default function HomePage() {
             <div className="receipt-lines bg-card px-5 pt-4 pb-3">
               <div className="flex items-start justify-between mb-3.5">
                 <div>
-                  <p className="font-bold text-[14px] text-foreground">스타벅스 강남역점</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">2026.04.08 &nbsp;·&nbsp; 아메리카노 외 2잔</p>
+                  <p className="font-bold text-[14px] text-foreground">화이트 키보드 데스크셋업</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">전자기기/데스크 &nbsp;·&nbsp; 미니멀한 작업 공간</p>
                 </div>
                 <div className="flex gap-1 mt-0.5">
                   {["짧게", "보통", "상세"].map((t, i) => (
@@ -275,9 +275,8 @@ export default function HomePage() {
               </div>
 
               <p className="text-[13.5px] leading-[1.7] text-foreground/90 mb-4">
-                조용하고 넓은 공간이라 오래 앉아 있기 좋았어요. 아메리카노가
-                진하면서도 부드러워서 만족스러웠고, 직원분들도 친절해서 기분
-                좋게 이용했습니다. ☕
+                화이트 톤으로 통일된 데스크가 깔끔해서 보는 것만으로도 집중이 잘 될 것 같아요.
+                키보드 배열도 단정하고 조명 톤이 은은해서 작업 공간 분위기를 세련되게 만들어줍니다.
               </p>
 
               <button

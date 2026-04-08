@@ -72,7 +72,7 @@ export default function FloatingButton() {
               onClick={() => !converting && fileInputRef.current?.click()}
               disabled={converting}
               className="relative w-[54px] h-[54px] rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/35 hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all duration-200 disabled:opacity-70 disabled:pointer-events-none"
-              aria-label="영수증 촬영"
+              aria-label="사진 업로드"
             >
               {converting
                 ? <Loader2 size={22} className="animate-spin" />

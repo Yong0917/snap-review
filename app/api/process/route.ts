@@ -3,26 +3,27 @@ import { GoogleGenAI, createPartFromBase64 } from "@google/genai";
 import { createServerClient } from "@/lib/supabase/server";
 import type { ExtractedInfo, GeneratedReviews } from "@/types/receipt";
 
-const PROMPT = `다음 영수증 이미지를 분석하여 아래 JSON 형식으로만 응답해주세요. 마크다운 코드 블록 없이 순수 JSON만 반환하세요.
+const PROMPT = `다음 이미지를 분석하여 아래 JSON 형식으로만 응답해주세요. 마크다운 코드 블록 없이 순수 JSON만 반환하세요.
 
 {
   "extracted": {
-    "storeName": "가게 상호명",
-    "date": "구매 날짜 (YYYY.MM.DD 형식)",
-    "items": "주문 상품명들 (쉼표로 구분, 최대 3개)",
-    "total": "총 결제 금액 (예: 12,500원)"
+    "subjectName": "사진의 핵심 대상, 장소, 음식, 제품명 또는 장면 이름",
+    "category": "음식/카페, 디저트, 공간, 전자기기, 패션, 뷰티, 라이프스타일 등 간단한 분류",
+    "keyDetails": "사진에서 눈에 띄는 특징 2~4개를 쉼표로 구분",
+    "moodAndContext": "사진의 분위기, 사용감, 상황을 한 문장으로 요약"
   },
   "reviews": {
-    "short": "실제 방문 고객 관점의 자연스러운 한국어 리뷰 (40~60자)",
-    "medium": "실제 방문 고객 관점의 자연스러운 한국어 리뷰 (80~120자)",
-    "detail": "실제 방문 고객 관점의 자연스러운 한국어 리뷰 (150~250자)"
+    "short": "실제 사용/방문/시식 후기를 떠올리게 하는 자연스러운 한국어 리뷰 (40~60자)",
+    "medium": "실제 사용/방문/시식 후기를 떠올리게 하는 자연스러운 한국어 리뷰 (80~120자)",
+    "detail": "실제 사용/방문/시식 후기를 떠올리게 하는 자연스러운 한국어 리뷰 (150~250자)"
   }
 }
 
 규칙:
-- 리뷰는 네이버·카카오맵·구글에 바로 올릴 수 있도록 자연스럽게 작성
-- 영수증 정보(가게명, 메뉴, 금액)를 최대한 활용
-- 영수증이 아닌 이미지라면 extracted의 storeName을 빈 문자열로 반환`;
+- 음식, 공간, 제품, 소품, 디저트, 데스크셋업 등 어떤 사진이든 리뷰를 작성
+- 보이는 정보만 바탕으로 작성하고, 확인할 수 없는 브랜드명이나 가격은 지어내지 말 것
+- 대상이 명확하지 않더라도 가장 핵심으로 보이는 장면 기준으로 subjectName을 작성할 것
+- 리뷰는 네이버·카카오·구글 후기처럼 자연스럽고 과장되지 않게 작성`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
       imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/receipts/${fileName}`;
     }
 
-    // 2. Gemini Vision으로 OCR + 리뷰 생성
+    // 2. Gemini Vision으로 이미지 분석 + 리뷰 생성
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
     const imagePart = createPartFromBase64(base64, mimeType);
 
@@ -70,21 +71,19 @@ export async function POST(request: NextRequest) {
     const jsonMatch = rawText.replace(/```json|```/g, "").match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       return NextResponse.json(
-        { error: "영수증을 인식하지 못했습니다. 더 선명한 사진으로 다시 시도해주세요." },
+        { error: "이미지를 분석하지 못했습니다. 더 선명한 사진으로 다시 시도해주세요." },
         { status: 422 }
       );
     }
 
     const parsed = JSON.parse(jsonMatch[0]);
-    const extracted: ExtractedInfo = parsed.extracted;
+    const extracted: ExtractedInfo = {
+      subjectName: parsed.extracted?.subjectName ?? "사진 속 장면",
+      category: parsed.extracted?.category ?? "기타",
+      keyDetails: parsed.extracted?.keyDetails ?? "핵심 특징을 파악하지 못함",
+      moodAndContext: parsed.extracted?.moodAndContext ?? "분위기 정보를 파악하지 못함",
+    };
     const reviews: GeneratedReviews = parsed.reviews;
-
-    if (!extracted?.storeName) {
-      return NextResponse.json(
-        { error: "영수증 정보를 읽을 수 없습니다. 영수증 사진인지 확인해주세요." },
-        { status: 422 }
-      );
-    }
 
     // 3. DB에 세션 저장
     const { data: sessionData } = await supabase

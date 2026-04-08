@@ -6,7 +6,7 @@ import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useReceiptStore } from "@/store/receipt";
 import type { ExtractedInfo, GeneratedReviews } from "@/types/receipt";
 
-const STEP_LABELS = ["이미지 분석 중", "구매 정보 추출 중", "리뷰 생성 중"];
+const STEP_LABELS = ["이미지 분석 중", "핵심 포인트 추출 중", "리뷰 생성 중"];
 // 각 스텝 최소 표시 시간(ms) — API 응답 기다리는 동안 자연스럽게 진행
 const STEP_MIN_MS = [1400, 1400, 0];
 

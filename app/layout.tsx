@@ -31,22 +31,22 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  title: "SnapReview — 영수증으로 리뷰 완성",
+  title: "SnapReview — 사진으로 리뷰 완성",
   description:
-    "영수증을 찍으면 AI가 리뷰를 써드립니다. 네이버·카카오·구글 어디에나 바로 붙여넣기.",
-  keywords: ["리뷰", "영수증", "AI 리뷰", "자동 리뷰 생성"],
+    "음식, 공간, 제품 사진을 올리면 AI가 리뷰를 써드립니다. 네이버·카카오·구글 어디에나 바로 붙여넣기.",
+  keywords: ["리뷰", "사진 리뷰", "AI 리뷰", "자동 리뷰 생성"],
   openGraph: {
-    title: "SnapReview — 영수증으로 리뷰 완성",
+    title: "SnapReview — 사진으로 리뷰 완성",
     description:
-      "영수증을 찍으면 AI가 리뷰를 써드립니다. 네이버·카카오·구글 어디에나 바로 붙여넣기.",
+      "음식, 공간, 제품 사진을 올리면 AI가 리뷰를 써드립니다. 네이버·카카오·구글 어디에나 바로 붙여넣기.",
     type: "website",
     locale: "ko_KR",
     siteName: "SnapReview",
   },
   twitter: {
     card: "summary",
-    title: "SnapReview — 영수증으로 리뷰 완성",
-    description: "영수증을 찍으면 AI가 리뷰를 써드립니다.",
+    title: "SnapReview — 사진으로 리뷰 완성",
+    description: "사진을 올리면 AI가 리뷰를 써드립니다.",
   },
 };
 

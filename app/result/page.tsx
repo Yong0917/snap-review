@@ -17,10 +17,10 @@ import type { ExtractedInfo, GeneratedReviews, ReviewLength } from "@/types/rece
 type ReviewType = ReviewLength;
 
 const OCR_ROW_CONFIG = [
-  { key: "storeName" as const, icon: Store,       label: "가게" },
-  { key: "date"      as const, icon: Calendar,    label: "날짜" },
-  { key: "items"     as const, icon: ShoppingBag, label: "주문" },
-  { key: "total"     as const, icon: Receipt,     label: "금액" },
+  { key: "subjectName"    as const, icon: Store,       label: "대상" },
+  { key: "category"       as const, icon: Calendar,    label: "분류" },
+  { key: "keyDetails"     as const, icon: ShoppingBag, label: "포인트" },
+  { key: "moodAndContext" as const, icon: Receipt,     label: "분위기" },
 ];
 
 export default function ResultPage() {
@@ -58,8 +58,8 @@ export default function ResultPage() {
       // Auto-save to history
       addItem({
         id: savedId,
-        storeName: ocrInfo.storeName,
-        date: ocrInfo.date,
+        title: ocrInfo.subjectName,
+        category: ocrInfo.category,
         reviews: reviewMap,
         activeReview: tab,
         createdAt: new Date().toISOString(),
@@ -136,10 +136,10 @@ export default function ResultPage() {
 
       <div className="flex-1 max-w-md mx-auto w-full px-4 py-4 flex flex-col gap-4">
 
-        {/* ── OCR info — receipt style ── */}
+        {/* ── Image info ── */}
         <section className="animate-fade-up">
           <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.13em] mb-2">
-            인식된 정보
+            이미지에서 읽은 정보
           </p>
           <div className="rounded-xl overflow-hidden border border-border shadow-sm">
             <div className="h-1 bg-gradient-to-r from-primary/30 via-primary/60 to-primary/30" />
@@ -172,7 +172,7 @@ export default function ResultPage() {
                   />
                 ) : (
                   <span
-                    className="text-[13px] font-medium flex-1 truncate"
+                    className="text-[13px] font-medium flex-1"
                     style={{ fontFamily: "var(--font-dm-serif)" }}
                   >
                     {ocrInfo[key]}
@@ -295,4 +295,3 @@ export default function ResultPage() {
     </div>
   );
 }
-

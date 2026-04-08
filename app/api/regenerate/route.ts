@@ -11,18 +11,18 @@ export async function POST(request: NextRequest) {
 
     const { extractedInfo, previousReviews } = body;
 
-    if (!extractedInfo?.storeName) {
-      return NextResponse.json({ error: "가게 정보가 없습니다." }, { status: 400 });
+    if (!extractedInfo?.subjectName) {
+      return NextResponse.json({ error: "사진 정보가 없습니다." }, { status: 400 });
     }
 
-    const prompt = `다음 가게 정보를 바탕으로 이전 리뷰와 완전히 다른 새로운 리뷰를 작성해주세요.
+    const prompt = `다음 이미지 정보를 바탕으로 이전 리뷰와 완전히 다른 새로운 리뷰를 작성해주세요.
 아래 JSON 형식으로만 응답해주세요. 마크다운 코드 블록 없이 순수 JSON만 반환하세요.
 
-가게 정보:
-- 상호명: ${extractedInfo.storeName}
-- 날짜: ${extractedInfo.date}
-- 주문: ${extractedInfo.items}
-- 금액: ${extractedInfo.total}
+이미지 정보:
+- 핵심 대상: ${extractedInfo.subjectName}
+- 카테고리: ${extractedInfo.category}
+- 주요 특징: ${extractedInfo.keyDetails}
+- 분위기/맥락: ${extractedInfo.moodAndContext}
 
 이전 리뷰 (반드시 다른 관점으로 작성):
 - 짧게: ${previousReviews.short}
@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
 
 규칙:
 - 이전 리뷰와 다른 표현, 다른 관점, 다른 감성으로 작성
+- 음식, 제품, 공간, 소품 등 어떤 사진에도 어울리게 자연스럽게 작성
 - 네이버·카카오맵·구글에 바로 올릴 수 있도록 자연스럽게`;
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });

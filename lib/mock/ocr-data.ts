@@ -2,22 +2,22 @@ import type { ExtractedInfo } from "@/types/receipt";
 
 export const mockOcrSamples: ExtractedInfo[] = [
   {
-    storeName: "스타벅스 강남역점",
-    date: "2026.04.08",
-    items: "아메리카노 Tall, 카페라떼 Grande",
-    total: "12,500원",
+    subjectName: "창가 자리의 카페 음료 세트",
+    category: "음식/카페",
+    keyDetails: "아이스 아메리카노, 라떼, 따뜻한 우드 톤 테이블, 자연광",
+    moodAndContext: "가볍게 수다 떨거나 작업하기 좋은 차분한 카페 분위기",
   },
   {
-    storeName: "맥도날드 홍대입구점",
-    date: "2026.04.08",
-    items: "빅맥 세트, 맥너겟 6조각",
-    total: "14,200원",
+    subjectName: "화이트 기계식 키보드 데스크셋업",
+    category: "전자기기/데스크",
+    keyDetails: "화이트 배열, LED 백라이트, 깔끔한 책상 정리, 미니멀 무드",
+    moodAndContext: "집중해서 작업하거나 게임하기 좋은 정돈된 셋업 느낌",
   },
   {
-    storeName: "올리브영 명동점",
-    date: "2026.04.08",
-    items: "라네즈 크림 스킨, 아이섀도우 팔레트",
-    total: "38,900원",
+    subjectName: "딸기 크림이 올라간 디저트 접시",
+    category: "디저트",
+    keyDetails: "부드러운 크림, 선명한 딸기 토핑, 플레이팅, 달콤한 비주얼",
+    moodAndContext: "기분 전환용으로 즐기기 좋은 달콤하고 화사한 분위기",
   },
 ];
 

@@ -1,8 +1,8 @@
 export interface ExtractedInfo {
-  storeName: string;
-  date: string;
-  items: string;
-  total: string;
+  subjectName: string;
+  category: string;
+  keyDetails: string;
+  moodAndContext: string;
 }
 
 export type ReviewLength = "short" | "medium" | "detail";
@@ -15,8 +15,8 @@ export interface GeneratedReviews {
 
 export interface ReviewHistory {
   id: string;
-  storeName: string;
-  date: string;
+  title: string;
+  category: string;
   reviews: GeneratedReviews;
   activeReview: ReviewLength;
   createdAt: string; // ISO string

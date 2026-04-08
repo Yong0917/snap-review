@@ -69,7 +69,7 @@ function HistoryCard({ item, onDelete }: { item: ReviewHistory; onDelete: () => 
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-0.5">
-              <span className="font-semibold text-[13.5px] truncate">{item.storeName}</span>
+              <span className="font-semibold text-[13.5px] truncate">{item.title}</span>
               <span className="shrink-0 text-[10px] px-1.5 py-0.5 rounded-md bg-primary/10 text-primary font-semibold">
                 {TAB_LABELS[item.activeReview]}
               </span>
@@ -78,7 +78,7 @@ function HistoryCard({ item, onDelete }: { item: ReviewHistory; onDelete: () => 
               <Clock size={10} />
               <span>{timeAgo(item.createdAt)}</span>
               <span>·</span>
-              <span>{item.date}</span>
+              <span>{item.category}</span>
             </div>
             {!open && (
               <p className="text-xs text-muted-foreground mt-1.5 line-clamp-1 leading-relaxed">
@@ -153,7 +153,7 @@ function HistoryCard({ item, onDelete }: { item: ReviewHistory; onDelete: () => 
           <DialogHeader>
             <DialogTitle className="text-[15px]">리뷰를 삭제할까요?</DialogTitle>
             <DialogDescription className="text-sm">
-              <span className="font-semibold text-foreground">{item.storeName}</span>의
+              <span className="font-semibold text-foreground">{item.title}</span>의
               리뷰가 히스토리에서 사라집니다.
             </DialogDescription>
           </DialogHeader>
@@ -226,14 +226,14 @@ export default function HistoryPage() {
               아직 리뷰가 없어요
             </h2>
             <p className="text-sm text-muted-foreground mb-6">
-              영수증을 찍으면 리뷰가 여기에 저장됩니다
+              업로드한 사진으로 만든 리뷰가 여기에 저장됩니다
             </p>
             <Link
               href="/"
               className="flex items-center gap-2 bg-primary text-primary-foreground rounded-full px-6 py-3 text-sm font-semibold hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
             >
               <Camera size={16} strokeWidth={2} />
-              영수증 업로드하기
+              사진 업로드하기
             </Link>
           </div>
         )}
