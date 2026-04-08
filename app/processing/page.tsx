@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useReceiptStore } from "@/store/receipt";
@@ -12,9 +12,47 @@ const STEP_MIN_MS = [1400, 1400, 0];
 
 export default function ProcessingPage() {
   const router = useRouter();
-  const { imageFile, status, currentStep, setCurrentStep, setResult, setError } =
-    useReceiptStore();
+  const [isRetrying, setIsRetrying] = useState(false);
+  const {
+    imageFile,
+    status,
+    currentStep,
+    setCurrentStep,
+    setResult,
+    setError,
+    setStatus,
+    reset,
+  } = useReceiptStore();
   const ranRef = useRef(false);
+
+  const run = useCallback(async () => {
+    if (!imageFile) return;
+
+    setStatus("processing");
+
+    // API 호출을 백그라운드에서 즉시 시작
+    const apiPromise = callProcessApi(imageFile);
+
+    // Step 0
+    setCurrentStep(0);
+    await delay(STEP_MIN_MS[0]);
+
+    // Step 1
+    setCurrentStep(1);
+    await delay(STEP_MIN_MS[1]);
+
+    // Step 2 — API 응답 대기
+    setCurrentStep(2);
+    const result = await apiPromise;
+
+    if ("error" in result) {
+      setError(result.error);
+      return;
+    }
+ 
+    setResult(result.extractedInfo, result.reviews, result.sessionId);
+    router.replace("/result");
+  }, [imageFile, router, setCurrentStep, setError, setResult, setStatus]);
 
   useEffect(() => {
     if (ranRef.current) return;
@@ -33,36 +71,23 @@ export default function ProcessingPage() {
     }
 
     run();
-
-    async function run() {
-      // API 호출을 백그라운드에서 즉시 시작
-      const apiPromise = callProcessApi(imageFile!);
-
-      // Step 0
-      setCurrentStep(0);
-      await delay(STEP_MIN_MS[0]);
-
-      // Step 1
-      setCurrentStep(1);
-      await delay(STEP_MIN_MS[1]);
-
-      // Step 2 — API 응답 대기
-      setCurrentStep(2);
-      const result = await apiPromise;
-
-      if ("error" in result) {
-        setError(result.error);
-        // 에러 메시지 잠깐 보여주고 홈으로
-        await delay(2000);
-        router.replace("/");
-        return;
-      }
-
-      setResult(result.extractedInfo, result.reviews, result.sessionId);
-      router.replace("/result");
-    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleRetry = async () => {
+    if (!imageFile || isRetrying) return;
+    setIsRetrying(true);
+    try {
+      await run();
+    } finally {
+      setIsRetrying(false);
+    }
+  };
+
+  const handleBackHome = () => {
+    reset();
+    router.replace("/");
+  };
 
   const isError = status === "error";
   const errorMessage = useReceiptStore((s) => s.errorMessage);
@@ -199,6 +224,31 @@ export default function ProcessingPage() {
             />
           </div>
         </div>
+
+        {isError && (
+          <div className="mt-6 space-y-2.5 animate-fade-up delay-300">
+            <button
+              onClick={handleRetry}
+              disabled={isRetrying || !imageFile}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+            >
+              {isRetrying ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  다시 시도하는 중...
+                </>
+              ) : (
+                "다시 시도"
+              )}
+            </button>
+            <button
+              onClick={handleBackHome}
+              className="flex w-full items-center justify-center rounded-2xl border border-border py-3.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            >
+              홈으로 돌아가기
+            </button>
+          </div>
+        )}
 
       </div>
     </div>
