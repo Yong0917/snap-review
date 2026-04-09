@@ -263,6 +263,7 @@ npm install
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODELS=gemini-2.5-flash,gemini-3-flash-preview,gemini-3.1-flash-lite-preview
 ```
 
 ### 3. 개발 서버 실행
@@ -287,6 +288,7 @@ npm run build
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase 프로젝트 URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 익명 클라이언트 키 |
 | `GEMINI_API_KEY` | Gemini API 호출용 서버 키 |
+| `GEMINI_MODELS` | 쉼표로 구분한 Gemini 모델 우선순위. quota 초과 시 다음 모델로 폴백 |
 
 ## 코드 예시
 
