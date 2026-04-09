@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, ScanLine, Copy, Sparkles, ArrowRight, Upload, AlertCircle, Loader2 } from "lucide-react";
@@ -102,12 +103,14 @@ export default function HomePage() {
       <header className="sticky top-0 z-30 bg-background/85 backdrop-blur-xl border-b border-border/50 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]">
         <div className="max-w-md mx-auto px-5 h-[58px] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div
-              className="w-8 h-8 rounded-[10px] flex items-center justify-center shadow-sm"
-              style={{ background: "linear-gradient(145deg, #bf4315 0%, #d96028 60%, #c85020 100%)" }}
-            >
-              <Camera size={14} className="text-white" strokeWidth={2.2} />
-            </div>
+            <Image
+              src="/icons/icon-32.png"
+              alt="SnapReview"
+              width={32}
+              height={32}
+              className="rounded-[10px] shadow-sm"
+              priority
+            />
             <span
               className="text-[1.22rem] tracking-tight text-foreground"
               style={{ fontFamily: "var(--font-dm-serif)" }}
