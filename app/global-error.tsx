@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 
 export default function GlobalError({
   error,
@@ -68,7 +69,7 @@ export default function GlobalError({
           >
             다시 시도
           </button>
-          <a
+          <Link
             href="/"
             style={{
               display: "block",
@@ -85,7 +86,7 @@ export default function GlobalError({
             }}
           >
             홈으로 돌아가기
-          </a>
+          </Link>
           {error.digest && (
             <p style={{ fontSize: 10, color: "#d1d5db", marginTop: 24 }}>
               오류 코드: {error.digest}
