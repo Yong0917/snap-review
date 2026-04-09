@@ -91,11 +91,9 @@
 
 ## 주요 화면
 
-> 현재 저장소에는 실제 실행 캡처 이미지가 포함되어 있지 않습니다. 아래 섹션은 현행 UI 코드 기준의 화면 분석이며, README 렌더링용 플레이스홀더 이미지를 `assets/`에 연결해 두었습니다.
-
 ### 1. 홈 `/`
 
-![Home Screen Placeholder](assets/home-screen.svg)
+![Home Screen](assets/home-screen.png)
 
 - 기능 설명
   사진 업로드, 드래그 앤 드롭, 모바일 카메라 촬영 진입점을 제공합니다.
@@ -106,7 +104,7 @@
 
 ### 2. 처리 화면 `/processing`
 
-![Processing Screen Placeholder](assets/processing-screen.svg)
+![Processing Screen](assets/processing-screen.png)
 
 - 기능 설명
   이미지 분석, 핵심 포인트 추출, 리뷰 생성의 3단계 진행 상태를 시각화합니다.
@@ -117,7 +115,7 @@
 
 ### 3. 결과 화면 `/result`
 
-![Result Screen Placeholder](assets/result-screen.svg)
+![Result Screen](assets/result-screen.png)
 
 - 기능 설명
   추출 정보 확인, 리뷰 길이 탭 전환, 직접 편집, 재생성, 복사 기능을 제공합니다.
@@ -128,7 +126,7 @@
 
 ### 4. 히스토리 화면 `/history`
 
-![History Screen Placeholder](assets/history-screen.svg)
+![History Screen](assets/history-screen.png)
 
 - 기능 설명
   과거에 복사한 리뷰를 다시 열람, 복사, 삭제할 수 있습니다.
@@ -358,7 +356,6 @@ export function saveHistory(items: ReviewHistory[]): void {
 
 ## 향후 개선 포인트
 
-- 실제 디바이스 기반 화면 캡처를 `assets/`에 추가해 README의 시각 자료를 완성할 수 있습니다.
 - 익명 업로드 구조에 맞는 Supabase Storage 정책과 rate limit을 더 정교하게 다듬을 수 있습니다.
 - 리뷰 품질 비교를 위해 재생성 전략에 tone, perspective, intent 옵션을 추가할 수 있습니다.
 - E2E 테스트를 도입해 업로드부터 복사까지의 핵심 사용자 플로우를 자동 검증할 수 있습니다.
