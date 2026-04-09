@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI, createPartFromBase64 } from "@google/genai";
 import { createServerClient } from "@/lib/supabase/server";
+import { generateContentWithFallback, isRetryableQuotaError } from "@/lib/gemini";
 import type { ExtractedInfo, GeneratedReviews } from "@/types/receipt";
 
 const PROMPT = `다음 이미지를 분석하여 아래 JSON 형식으로만 응답해주세요. 마크다운 코드 블록 없이 순수 JSON만 반환하세요.
@@ -59,15 +60,16 @@ export async function POST(request: NextRequest) {
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
     const imagePart = createPartFromBase64(base64, mimeType);
 
-    const geminiPromise = ai.models.generateContent({
-      model: "gemini-2.5-flash",
+    const geminiPromise = generateContentWithFallback(ai, {
       contents: [{ role: "user", parts: [imagePart, { text: PROMPT }] }],
     });
     const timeoutPromise = new Promise<never>((_, reject) => {
       timeoutId = setTimeout(() => reject(new Error("TIMEOUT")), 15000);
     });
-    const response = await Promise.race([geminiPromise, timeoutPromise]);
+    const { model, response } = await Promise.race([geminiPromise, timeoutPromise]);
     clearTimeout(timeoutId);
+
+    console.info(`[/api/process] generated with ${model}`);
 
     const rawText = response.text ?? "";
 
@@ -115,7 +117,7 @@ export async function POST(request: NextRequest) {
           { status: 408 }
         );
       }
-      if (err.message.includes("429") || err.message.toLowerCase().includes("quota")) {
+      if (isRetryableQuotaError(err)) {
         return NextResponse.json(
           { error: "AI 사용량 한도에 도달했습니다. 잠시 후 다시 시도해주세요." },
           { status: 429 }

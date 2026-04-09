@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
+import { generateContentWithFallback, isRetryableQuotaError } from "@/lib/gemini";
 import type { ExtractedInfo, GeneratedReviews } from "@/types/receipt";
 
 export async function POST(request: NextRequest) {
@@ -44,15 +45,16 @@ export async function POST(request: NextRequest) {
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
-    const geminiPromise = ai.models.generateContent({
-      model: "gemini-2.5-flash",
+    const geminiPromise = generateContentWithFallback(ai, {
       contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
     const timeoutPromise = new Promise<never>((_, reject) => {
       timeoutId = setTimeout(() => reject(new Error("TIMEOUT")), 15000);
     });
-    const response = await Promise.race([geminiPromise, timeoutPromise]);
+    const { model, response } = await Promise.race([geminiPromise, timeoutPromise]);
     clearTimeout(timeoutId);
+
+    console.info(`[/api/regenerate] generated with ${model}`);
 
     const rawText = response.text ?? "";
     const jsonMatch = rawText.replace(/```json|```/g, "").match(/\{[\s\S]*\}/);
@@ -71,7 +73,7 @@ export async function POST(request: NextRequest) {
       if (err.message === "TIMEOUT") {
         return NextResponse.json({ error: "처리 시간이 초과되었습니다. 다시 시도해주세요." }, { status: 408 });
       }
-      if (err.message.includes("429") || err.message.toLowerCase().includes("quota")) {
+      if (isRetryableQuotaError(err)) {
         return NextResponse.json({ error: "AI 사용량 한도에 도달했습니다. 잠시 후 다시 시도해주세요." }, { status: 429 });
       }
     }
