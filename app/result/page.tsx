@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft, Copy, Check, RefreshCw, Pencil, CheckCheck,
   Store, Calendar, ShoppingBag, Receipt,
 } from "lucide-react";
-import Link from "next/link";
 import { toast } from "sonner";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useReceiptStore } from "@/store/receipt";
@@ -24,7 +24,8 @@ const OCR_ROW_CONFIG = [
 ];
 
 export default function ResultPage() {
-  const { extractedInfo, reviews, sessionId, updateReviews } = useReceiptStore();
+  const router = useRouter();
+  const { extractedInfo, reviews, sessionId, updateReviews, reset } = useReceiptStore();
   const { addItem } = useHistoryStore();
 
   const initialInfo: ExtractedInfo = extractedInfo ?? mockOcrSamples[0];
@@ -92,6 +93,11 @@ export default function ResultPage() {
     }
   };
 
+  const handleBack = () => {
+    reset();
+    router.push("/");
+  };
+
   const handleOcrFieldSave = () => {
     setEditingField(null);
   };
@@ -114,12 +120,12 @@ export default function ResultPage() {
       {/* ── Header ── */}
       <header className="sticky top-0 z-30 bg-background/85 backdrop-blur-xl border-b border-border/50 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]">
         <div className="max-w-md mx-auto px-4 h-[58px] flex items-center gap-3">
-          <Link
-            href="/"
+          <button
+            onClick={handleBack}
             className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-muted transition-colors"
           >
             <ArrowLeft size={18} />
-          </Link>
+          </button>
           <h1
             className="font-serif font-bold text-[17px] flex-1"
             style={{ fontFamily: "var(--font-gowun)" }}
@@ -256,7 +262,7 @@ export default function ResultPage() {
                   {/* Footer bar */}
                   <div className="px-4 py-2.5 border-t border-border/50 bg-muted/15 flex items-center justify-between">
                     <span className="text-[11px] text-muted-foreground tabular-nums">
-                      {reviewMap[t].length}자
+                      {regenerating ? "—" : `${reviewMap[t].length}자`}
                     </span>
                     <button
                       onClick={() => setEditingReview(!editingReview)}
