@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" fill="none">
+  <rect width="1200" height="720" rx="32" fill="#F6F1EA"/>
+  <rect x="64" y="48" width="1072" height="624" rx="28" fill="#FFFDF9" stroke="#E7DDD3" stroke-width="2"/>
+  <rect x="470" y="120" width="260" height="360" rx="28" fill="#FBF7F2" stroke="#E7DDD3" stroke-width="2"/>
+  <rect x="500" y="156" width="200" height="8" rx="4" fill="#2F2219" fill-opacity=".08"/>
+  <rect x="500" y="188" width="200" height="8" rx="4" fill="#2F2219" fill-opacity=".08"/>
+  <rect x="500" y="220" width="200" height="8" rx="4" fill="#2F2219" fill-opacity=".08"/>
+  <rect x="500" y="252" width="200" height="8" rx="4" fill="#2F2219" fill-opacity=".08"/>
+  <rect x="470" y="286" width="260" height="4" fill="#C85520"/>
+  <rect x="342" y="530" width="516" height="28" rx="14" fill="#EDE1D5"/>
+  <rect x="342" y="530" width="344" height="28" rx="14" fill="#C85520"/>
+  <rect x="320" y="420" width="560" height="64" rx="20" fill="#FFFFFF" stroke="#E7DDD3" stroke-width="2"/>
+  <rect x="320" y="334" width="560" height="64" rx="20" fill="#FFF4EE" stroke="#F1C8B4" stroke-width="2"/>
+  <rect x="320" y="248" width="560" height="64" rx="20" fill="#FFFFFF" stroke="#E7DDD3" stroke-width="2"/>
+  <text x="112" y="610" fill="#6A5B50" font-family="Arial, sans-serif" font-size="24">Placeholder image. Replace with an actual screen capture of the processing page.</text>
+</svg>

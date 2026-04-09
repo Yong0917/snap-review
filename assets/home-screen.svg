@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" fill="none">
+  <rect width="1200" height="720" rx="32" fill="#F6F1EA"/>
+  <rect x="64" y="48" width="1072" height="624" rx="28" fill="#FFFDF9" stroke="#E7DDD3" stroke-width="2"/>
+  <rect x="112" y="96" width="220" height="20" rx="10" fill="#C85520" fill-opacity=".18"/>
+  <rect x="112" y="142" width="460" height="62" rx="18" fill="#2F2219" fill-opacity=".08"/>
+  <rect x="112" y="230" width="430" height="18" rx="9" fill="#2F2219" fill-opacity=".08"/>
+  <rect x="112" y="260" width="360" height="18" rx="9" fill="#2F2219" fill-opacity=".08"/>
+  <rect x="112" y="328" width="976" height="220" rx="28" fill="#FBF7F2" stroke="#E7DDD3" stroke-width="2"/>
+  <rect x="160" y="380" width="120" height="120" rx="28" fill="#C85520" fill-opacity=".12"/>
+  <rect x="318" y="392" width="220" height="20" rx="10" fill="#2F2219" fill-opacity=".10"/>
+  <rect x="318" y="428" width="170" height="16" rx="8" fill="#2F2219" fill-opacity=".08"/>
+  <rect x="318" y="470" width="170" height="44" rx="14" fill="#C85520"/>
+  <rect x="504" y="470" width="170" height="44" rx="14" fill="#FFFFFF" stroke="#E7DDD3" stroke-width="2"/>
+  <text x="112" y="610" fill="#6A5B50" font-family="Arial, sans-serif" font-size="24">Placeholder image. Replace with an actual screen capture of the home page.</text>
+</svg>
