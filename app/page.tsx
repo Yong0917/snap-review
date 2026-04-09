@@ -104,7 +104,7 @@ export default function HomePage() {
         <div className="max-w-md mx-auto px-5 h-[58px] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <Image
-              src="/icons/icon-32.png"
+              src="/icons/icon-512.png"
               alt="SnapReview"
               width={32}
               height={32}
