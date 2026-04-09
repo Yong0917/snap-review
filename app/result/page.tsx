@@ -17,17 +17,16 @@ import type { ExtractedInfo, GeneratedReviews, ReviewLength } from "@/types/rece
 type ReviewType = ReviewLength;
 
 const OCR_ROW_CONFIG = [
-  { key: "subjectName"    as const, icon: Store,       label: "대상" },
-  { key: "category"       as const, icon: Calendar,    label: "분류" },
-  { key: "keyDetails"     as const, icon: ShoppingBag, label: "포인트" },
-  { key: "moodAndContext" as const, icon: Receipt,     label: "분위기" },
+  { key: "subjectName"    as const, icon: Store,       label: "대상",   color: "text-blue-500" },
+  { key: "category"       as const, icon: Calendar,    label: "분류",   color: "text-violet-500" },
+  { key: "keyDetails"     as const, icon: ShoppingBag, label: "포인트", color: "text-amber-500" },
+  { key: "moodAndContext" as const, icon: Receipt,     label: "분위기", color: "text-emerald-500" },
 ];
 
 export default function ResultPage() {
   const { extractedInfo, reviews, sessionId, updateReviews } = useReceiptStore();
   const { addItem } = useHistoryStore();
 
-  // Fallback to mock if navigated directly (e.g. dev/refresh)
   const initialInfo: ExtractedInfo = extractedInfo ?? mockOcrSamples[0];
   const initialReviews: GeneratedReviews = reviews ?? mockReviewSets[0];
 
@@ -55,7 +54,6 @@ export default function ResultPage() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2200);
 
-      // Auto-save to history
       addItem({
         id: savedId,
         title: ocrInfo.subjectName,
@@ -70,7 +68,6 @@ export default function ResultPage() {
         description: "네이버·카카오·구글에 바로 붙여넣기 하세요",
       });
     } catch {
-      // Fallback for browsers without clipboard API
       toast.error("복사에 실패했습니다. 텍스트를 직접 선택해 복사해주세요.");
     }
   };
@@ -105,11 +102,17 @@ export default function ResultPage() {
     detail: "상세",
   };
 
+  const tabDesc: Record<ReviewType, string> = {
+    short: "40~60자",
+    medium: "80~120자",
+    detail: "150~250자",
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
 
       {/* ── Header ── */}
-      <header className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b border-border/60">
+      <header className="sticky top-0 z-30 bg-background/85 backdrop-blur-xl border-b border-border/50 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]">
         <div className="max-w-md mx-auto px-4 h-[58px] flex items-center gap-3">
           <Link
             href="/"
@@ -126,9 +129,9 @@ export default function ResultPage() {
           <button
             onClick={handleRegenerate}
             disabled={regenerating}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 px-2.5 py-1.5 rounded-lg hover:bg-primary/8"
           >
-            <RefreshCw size={13} className={regenerating ? "animate-spin" : ""} />
+            <RefreshCw size={12} className={regenerating ? "animate-spin" : ""} />
             다시 생성
           </button>
         </div>
@@ -138,20 +141,23 @@ export default function ResultPage() {
 
         {/* ── Image info ── */}
         <section className="animate-fade-up">
-          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.13em] mb-2">
+          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.14em] mb-2.5">
             이미지에서 읽은 정보
           </p>
-          <div className="rounded-xl overflow-hidden border border-border shadow-sm">
-            <div className="h-1 bg-gradient-to-r from-primary/30 via-primary/60 to-primary/30" />
-            {OCR_ROW_CONFIG.map(({ key, icon: Icon, label }, i) => (
+          <div className="rounded-xl overflow-hidden border border-border shadow-sm bg-card">
+            {/* Top accent */}
+            <div className="h-[2.5px]" style={{ background: "linear-gradient(90deg, transparent 0%, var(--primary) 30%, var(--primary) 70%, transparent 100%)" }} />
+            {OCR_ROW_CONFIG.map(({ key, icon: Icon, label, color }, i) => (
               <div
                 key={key}
                 className={`flex items-center gap-3 px-4 py-3 ${
-                  i < OCR_ROW_CONFIG.length - 1 ? "border-b border-border/60" : ""
+                  i < OCR_ROW_CONFIG.length - 1 ? "border-b border-border/50" : ""
                 }`}
               >
-                <Icon size={14} className="text-muted-foreground shrink-0" />
-                <span className="text-xs text-muted-foreground w-8 shrink-0">{label}</span>
+                <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${color} bg-current/10`}>
+                  <Icon size={12} className={color} />
+                </div>
+                <span className="text-[11px] font-semibold text-muted-foreground w-10 shrink-0">{label}</span>
 
                 {editingField === key ? (
                   <input
@@ -168,11 +174,11 @@ export default function ResultPage() {
                         setEditingField(null);
                       }
                     }}
-                    className="flex-1 text-[13px] font-medium bg-transparent outline-none border-b border-primary focus:border-primary"
+                    className="flex-1 text-[13px] font-medium bg-transparent outline-none border-b border-primary/60 focus:border-primary pb-0.5"
                   />
                 ) : (
                   <span
-                    className="text-[13px] font-medium flex-1"
+                    className="text-[13px] font-medium flex-1 text-foreground"
                     style={{ fontFamily: "var(--font-dm-serif)" }}
                   >
                     {ocrInfo[key]}
@@ -183,7 +189,7 @@ export default function ResultPage() {
                   onClick={() =>
                     editingField === key ? handleOcrFieldSave() : setEditingField(key)
                   }
-                  className="shrink-0 text-muted-foreground/40 hover:text-primary transition-colors"
+                  className="shrink-0 text-muted-foreground/35 hover:text-primary transition-colors p-1"
                 >
                   {editingField === key ? (
                     <CheckCheck size={11} className="text-primary" />
@@ -198,7 +204,7 @@ export default function ResultPage() {
 
         {/* ── Review Tabs ── */}
         <section className="flex-1 animate-fade-up delay-150">
-          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.13em] mb-2">
+          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.14em] mb-2.5">
             AI 생성 리뷰
           </p>
 
@@ -209,24 +215,27 @@ export default function ResultPage() {
               setEditingReview(false);
             }}
           >
-            <TabsList className="w-full mb-3 bg-muted/60 p-1 rounded-xl h-auto">
+            <TabsList className="w-full mb-3 bg-muted/50 p-1 rounded-xl h-auto border border-border/50">
               {(["short", "medium", "detail"] as ReviewType[]).map((t) => (
                 <TabsTrigger
                   key={t}
                   value={t}
-                  className="flex-1 rounded-lg text-xs py-2 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all"
+                  className="flex-1 rounded-lg py-2 transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-primary/15"
                 >
-                  {tabLabel[t]}
+                  <span className="text-xs font-semibold">{tabLabel[t]}</span>
+                  <span className="text-[10px] text-muted-foreground ml-1 font-normal hidden sm:inline">
+                    {tabDesc[t]}
+                  </span>
                 </TabsTrigger>
               ))}
             </TabsList>
 
             {(["short", "medium", "detail"] as ReviewType[]).map((t) => (
               <TabsContent key={t} value={t} className="mt-0">
-                <div className={`rounded-xl overflow-hidden border shadow-sm transition-colors ${
-                  regenerating ? "border-primary/30 opacity-60" : "border-border"
+                <div className={`rounded-xl overflow-hidden border shadow-sm transition-all ${
+                  regenerating ? "border-primary/30 opacity-55" : "border-border"
                 }`}>
-                  {/* Review text area */}
+                  {/* Review text */}
                   <div className="receipt-lines bg-card">
                     {editingReview && tab === t ? (
                       <textarea
@@ -234,24 +243,26 @@ export default function ResultPage() {
                         onChange={(e) =>
                           setReviewMap((m) => ({ ...m, [t]: e.target.value }))
                         }
-                        className="w-full px-4 pt-4 pb-2 text-[13.5px] leading-[1.75] resize-none min-h-[110px] bg-transparent outline-none font-sans"
+                        className="w-full px-4 pt-4 pb-2 text-[13.5px] leading-[1.78] resize-none min-h-[110px] bg-transparent outline-none font-sans"
                         autoFocus
                       />
                     ) : (
-                      <p className="px-4 pt-4 pb-2 text-[13.5px] leading-[1.75] text-foreground/90">
+                      <p className="px-4 pt-4 pb-2 text-[13.5px] leading-[1.78] text-foreground/88">
                         {regenerating ? "새 리뷰를 생성하고 있어요..." : reviewMap[t]}
                       </p>
                     )}
                   </div>
 
                   {/* Footer bar */}
-                  <div className="px-4 py-2.5 border-t border-border/60 bg-muted/20 flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">{reviewMap[t].length}자</span>
+                  <div className="px-4 py-2.5 border-t border-border/50 bg-muted/15 flex items-center justify-between">
+                    <span className="text-[11px] text-muted-foreground tabular-nums">
+                      {reviewMap[t].length}자
+                    </span>
                     <button
                       onClick={() => setEditingReview(!editingReview)}
                       className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
                     >
-                      <Pencil size={11} />
+                      <Pencil size={10} />
                       {editingReview ? "완료" : "수정하기"}
                     </button>
                   </div>
@@ -263,16 +274,19 @@ export default function ResultPage() {
       </div>
 
       {/* ── Sticky copy button ── */}
-      <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border/50 px-4 py-3">
+      <div className="sticky bottom-0 bg-background/92 backdrop-blur-xl border-t border-border/40 px-4 py-3.5 shadow-[0_-8px_24px_-4px_rgba(0,0,0,0.08)]">
         <div className="max-w-md mx-auto">
           <button
             onClick={handleCopy}
             disabled={regenerating}
             className={`w-full flex items-center justify-center gap-2.5 rounded-2xl py-4 text-[15px] font-bold transition-all duration-300 disabled:opacity-50 ${
               copied
-                ? "bg-green-500 text-white shadow-lg shadow-green-500/25"
-                : "bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90 active:scale-[0.98]"
+                ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/25"
+                : "text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-92 active:scale-[0.98]"
             }`}
+            style={!copied ? {
+              background: "linear-gradient(135deg, var(--primary) 0%, color-mix(in oklch, var(--primary) 82%, oklch(0.7 0.15 50)) 100%)",
+            } : undefined}
           >
             {copied ? (
               <>
@@ -281,12 +295,12 @@ export default function ResultPage() {
               </>
             ) : (
               <>
-                <Copy size={18} strokeWidth={2} />
+                <Copy size={17} strokeWidth={2} />
                 {tabLabel[tab]} 리뷰 복사하기
               </>
             )}
           </button>
-          <p className="text-center text-xs text-muted-foreground mt-2">
+          <p className="text-center text-[11px] text-muted-foreground/65 mt-2">
             복사 시 히스토리에 자동 저장됩니다
           </p>
         </div>

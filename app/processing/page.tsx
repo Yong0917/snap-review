@@ -7,7 +7,6 @@ import { useReceiptStore } from "@/store/receipt";
 import type { ExtractedInfo, GeneratedReviews } from "@/types/receipt";
 
 const STEP_LABELS = ["이미지 분석 중", "핵심 포인트 추출 중", "리뷰 생성 중"];
-// 각 스텝 최소 표시 시간(ms) — API 응답 기다리는 동안 자연스럽게 진행
 const STEP_MIN_MS = [1400, 1400, 0];
 
 export default function ProcessingPage() {
@@ -30,18 +29,14 @@ export default function ProcessingPage() {
 
     setStatus("processing");
 
-    // API 호출을 백그라운드에서 즉시 시작
     const apiPromise = callProcessApi(imageFile);
 
-    // Step 0
     setCurrentStep(0);
     await delay(STEP_MIN_MS[0]);
 
-    // Step 1
     setCurrentStep(1);
     await delay(STEP_MIN_MS[1]);
 
-    // Step 2 — API 응답 대기
     setCurrentStep(2);
     const result = await apiPromise;
 
@@ -49,7 +44,7 @@ export default function ProcessingPage() {
       setError(result.error);
       return;
     }
- 
+
     setResult(result.extractedInfo, result.reviews, result.sessionId);
     router.replace("/result");
   }, [imageFile, router, setCurrentStep, setError, setResult, setStatus]);
@@ -58,13 +53,11 @@ export default function ProcessingPage() {
     if (ranRef.current) return;
     ranRef.current = true;
 
-    // 이미 완료된 상태면 바로 이동
     if (status === "done") {
       router.replace("/result");
       return;
     }
 
-    // 파일 없이 직접 접근한 경우 홈으로
     if (!imageFile) {
       router.replace("/");
       return;
@@ -95,19 +88,35 @@ export default function ProcessingPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-5 bg-background">
-      <div className="w-full max-w-xs">
+
+      {/* Ambient background glow */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background: isError
+            ? "radial-gradient(ellipse 60% 50% at 50% 40%, color-mix(in oklch, var(--destructive) 6%, transparent), transparent)"
+            : "radial-gradient(ellipse 70% 55% at 50% 38%, color-mix(in oklch, var(--primary) 8%, transparent), transparent)",
+        }}
+      />
+
+      <div className="w-full max-w-xs relative">
 
         {/* ── Receipt + Scanner ── */}
         <div className="relative mx-auto w-44 h-56 mb-10">
-          <div className="absolute inset-[-6px] rounded-[22px] bg-primary/8 blur-lg" />
-          <div className="relative w-full h-full rounded-2xl receipt-lines bg-card border border-border/80 shadow-xl overflow-hidden">
+          {/* Outer glow */}
+          <div
+            className={`absolute inset-[-10px] rounded-[24px] blur-xl pointer-events-none transition-colors duration-500 ${
+              isError ? "bg-destructive/6" : "bg-primary/8 animate-progress-glow"
+            }`}
+          />
+          <div className="relative w-full h-full rounded-2xl receipt-lines bg-card border border-border/80 shadow-2xl overflow-hidden">
             {!isError && (
               <div
                 className="animate-scan-line"
                 style={{
                   background:
-                    "linear-gradient(to right, transparent 0%, oklch(0.578 0.212 36 / 0.7) 40%, oklch(0.578 0.212 36) 50%, oklch(0.578 0.212 36 / 0.7) 60%, transparent 100%)",
-                  boxShadow: "0 0 10px 2px oklch(0.578 0.212 36 / 0.4)",
+                    "linear-gradient(to right, transparent 0%, color-mix(in oklch, var(--primary) 65%, transparent) 35%, var(--primary) 50%, color-mix(in oklch, var(--primary) 65%, transparent) 65%, transparent 100%)",
+                  boxShadow: "0 0 12px 3px color-mix(in oklch, var(--primary) 35%, transparent)",
                 }}
               />
             )}
@@ -116,11 +125,13 @@ export default function ProcessingPage() {
                 <div
                   key={i}
                   className="h-[5px] rounded-full bg-border"
-                  style={{ width: `${65 + (i % 3) * 12}%`, opacity: 0.5 }}
+                  style={{ width: `${65 + (i % 3) * 12}%`, opacity: 0.45 }}
                 />
               ))}
             </div>
           </div>
+
+          {/* Corner markers */}
           {[
             "top-0 left-0 border-t-2 border-l-2 rounded-tl-md",
             "top-0 right-0 border-t-2 border-r-2 rounded-tr-md",
@@ -129,13 +140,15 @@ export default function ProcessingPage() {
           ].map((cls, i) => (
             <div
               key={i}
-              className={`absolute w-4 h-4 ${isError ? "border-destructive/50" : "border-primary/50"} ${cls}`}
+              className={`absolute w-4 h-4 transition-colors duration-500 ${
+                isError ? "border-destructive/45" : "border-primary/55"
+              } ${cls}`}
             />
           ))}
         </div>
 
         {/* ── Title ── */}
-        <div className="text-center mb-8 animate-fade-up">
+        <div className="text-center mb-7 animate-fade-up">
           {isError ? (
             <>
               <h1 className="font-serif font-bold text-2xl text-destructive mb-1.5">
@@ -148,7 +161,8 @@ export default function ProcessingPage() {
           ) : (
             <>
               <h1 className="font-serif font-bold text-2xl text-foreground mb-1.5">
-                {STEP_LABELS[currentStep]}...
+                {STEP_LABELS[currentStep]}
+                <span className="animate-progress-glow">...</span>
               </h1>
               <p className="text-sm text-muted-foreground">잠시만 기다려주세요</p>
             </>
@@ -156,7 +170,7 @@ export default function ProcessingPage() {
         </div>
 
         {/* ── Steps ── */}
-        <div className="space-y-2.5 mb-8 animate-fade-up delay-150">
+        <div className="space-y-2 mb-8 animate-fade-up delay-150">
           {STEP_LABELS.map((label, i) => {
             const done = isError ? false : i < currentStep;
             const active = isError ? false : i === currentStep;
@@ -169,10 +183,10 @@ export default function ProcessingPage() {
                   failed
                     ? "border-destructive/30 bg-destructive/5"
                     : active
-                    ? "border-primary/30 bg-primary/5 shadow-sm shadow-primary/8"
+                    ? "border-primary/35 bg-primary/6 shadow-sm shadow-primary/10"
                     : done
-                    ? "border-border bg-muted/30"
-                    : "border-border/50 bg-background opacity-35"
+                    ? "border-border bg-muted/25"
+                    : "border-border/40 bg-background opacity-30"
                 }`}
               >
                 {failed ? (
@@ -182,7 +196,7 @@ export default function ProcessingPage() {
                 ) : active ? (
                   <Loader2 size={18} className="text-primary shrink-0 animate-spin" />
                 ) : (
-                  <div className="w-[18px] h-[18px] rounded-full border-2 border-border shrink-0" />
+                  <div className="w-[18px] h-[18px] rounded-full border-2 border-border/60 shrink-0" />
                 )}
                 <span
                   className={`text-sm font-medium flex-1 ${
@@ -198,7 +212,7 @@ export default function ProcessingPage() {
                   {label}
                 </span>
                 {done && (
-                  <span className="text-[11px] text-muted-foreground font-medium">완료</span>
+                  <span className="text-[11px] text-primary/60 font-semibold">완료</span>
                 )}
               </div>
             );
@@ -207,10 +221,12 @@ export default function ProcessingPage() {
 
         {/* ── Progress bar ── */}
         <div className="animate-fade-up delay-225">
-          <div className="flex items-center justify-between mb-1.5">
+          <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-muted-foreground">진행률</span>
             <span
-              className={`text-xs font-semibold ${isError ? "text-destructive" : "text-primary"}`}
+              className={`text-xs font-bold tabular-nums ${
+                isError ? "text-destructive" : "text-primary"
+              }`}
             >
               {isError ? "실패" : `${Math.round(progress)}%`}
             </span>
@@ -220,7 +236,10 @@ export default function ProcessingPage() {
               className={`h-full rounded-full transition-all duration-700 ease-out ${
                 isError ? "bg-destructive" : "bg-primary"
               }`}
-              style={{ width: `${progress}%` }}
+              style={{
+                width: `${progress}%`,
+                boxShadow: isError ? "none" : "0 0 8px 1px color-mix(in oklch, var(--primary) 50%, transparent)",
+              }}
             />
           </div>
         </div>
@@ -230,7 +249,7 @@ export default function ProcessingPage() {
             <button
               onClick={handleRetry}
               disabled={isRetrying || !imageFile}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
             >
               {isRetrying ? (
                 <>
@@ -255,7 +274,6 @@ export default function ProcessingPage() {
   );
 }
 
-// API 호출
 async function callProcessApi(
   file: File
 ): Promise<
