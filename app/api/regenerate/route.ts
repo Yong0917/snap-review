@@ -3,6 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 import type { ExtractedInfo, GeneratedReviews } from "@/types/receipt";
 
 export async function POST(request: NextRequest) {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
   try {
     const body = await request.json() as {
       extractedInfo: ExtractedInfo;
@@ -47,10 +48,11 @@ export async function POST(request: NextRequest) {
       model: "gemini-2.5-flash",
       contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("TIMEOUT")), 15000)
-    );
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutId = setTimeout(() => reject(new Error("TIMEOUT")), 15000);
+    });
     const response = await Promise.race([geminiPromise, timeoutPromise]);
+    clearTimeout(timeoutId);
 
     const rawText = response.text ?? "";
     const jsonMatch = rawText.replace(/```json|```/g, "").match(/\{[\s\S]*\}/);
@@ -63,6 +65,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ reviews });
   } catch (err) {
+    clearTimeout(timeoutId);
     console.error("[/api/regenerate]", err);
     if (err instanceof Error) {
       if (err.message === "TIMEOUT") {

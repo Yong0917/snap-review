@@ -26,6 +26,7 @@ const PROMPT = `다음 이미지를 분석하여 아래 JSON 형식으로만 응
 - 리뷰는 네이버·카카오·구글 후기처럼 자연스럽고 과장되지 않게 작성`;
 
 export async function POST(request: NextRequest) {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
   try {
     const formData = await request.formData();
     const imageFile = formData.get("image") as File | null;
@@ -60,10 +61,11 @@ export async function POST(request: NextRequest) {
       model: "gemini-2.5-flash",
       contents: [{ role: "user", parts: [imagePart, { text: PROMPT }] }],
     });
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("TIMEOUT")), 15000)
-    );
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutId = setTimeout(() => reject(new Error("TIMEOUT")), 15000);
+    });
     const response = await Promise.race([geminiPromise, timeoutPromise]);
+    clearTimeout(timeoutId);
 
     const rawText = response.text ?? "";
 
@@ -83,7 +85,11 @@ export async function POST(request: NextRequest) {
       keyDetails: parsed.extracted?.keyDetails ?? "핵심 특징을 파악하지 못함",
       moodAndContext: parsed.extracted?.moodAndContext ?? "분위기 정보를 파악하지 못함",
     };
-    const reviews: GeneratedReviews = parsed.reviews;
+    const reviews: GeneratedReviews = {
+      short: parsed.reviews?.short ?? "리뷰를 생성하지 못했습니다.",
+      medium: parsed.reviews?.medium ?? "리뷰를 생성하지 못했습니다.",
+      detail: parsed.reviews?.detail ?? "리뷰를 생성하지 못했습니다.",
+    };
 
     // 3. DB에 세션 저장
     const { data: sessionData } = await supabase
@@ -98,6 +104,7 @@ export async function POST(request: NextRequest) {
       reviews,
     });
   } catch (err) {
+    clearTimeout(timeoutId);
     console.error("[/api/process]", err);
     if (err instanceof Error) {
       if (err.message === "TIMEOUT") {
