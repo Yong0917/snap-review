@@ -56,10 +56,13 @@ export function isRetryableQuotaError(error: unknown) {
 
   return (
     status === 429 ||
+    status === 503 ||
     message.includes("quota") ||
     message.includes("resource_exhausted") ||
     message.includes("rate limit") ||
-    message.includes("too many requests")
+    message.includes("too many requests") ||
+    message.includes("unavailable") ||
+    message.includes("high demand")
   );
 }
 
