@@ -91,49 +91,28 @@
 
 ## 주요 화면
 
-### 1. 홈 `/`
-
-![Home Screen](assets/home-screen.png)
-
-- 기능 설명
-  사진 업로드, 드래그 앤 드롭, 모바일 카메라 촬영 진입점을 제공합니다.
-- 사용자 시나리오
-  사용자는 업로드 버튼이나 카메라 버튼을 눌러 이미지를 선택하고 바로 분석 플로우로 진입합니다.
-- 핵심 UI/UX 포인트
-  영수증 종이 느낌의 업로드 카드, 따뜻한 크림톤 컬러 시스템, 큰 1차 CTA, 지원 포맷과 제한 조건의 즉시 안내가 특징입니다.
-
-### 2. 처리 화면 `/processing`
-
-![Processing Screen](assets/processing-screen.png)
-
-- 기능 설명
-  이미지 분석, 핵심 포인트 추출, 리뷰 생성의 3단계 진행 상태를 시각화합니다.
-- 사용자 시나리오
-  사용자는 대기 중에도 현재 작업 단계를 인지할 수 있고, 실패 시 재시도 또는 홈 복귀를 선택할 수 있습니다.
-- 핵심 UI/UX 포인트
-  스캐너처럼 움직이는 라인 애니메이션, 단계별 상태 컴포넌트, 실패 메시지와 재시도 액션을 한 화면에 정리했습니다.
-
-### 3. 결과 화면 `/result`
-
-![Result Screen](assets/result-screen.png)
-
-- 기능 설명
-  추출 정보 확인, 리뷰 길이 탭 전환, 직접 편집, 재생성, 복사 기능을 제공합니다.
-- 사용자 시나리오
-  사용자는 AI가 읽은 정보를 검토하고, 리뷰를 수정한 뒤 최종 문장을 클립보드로 복사합니다.
-- 핵심 UI/UX 포인트
-  정보 카드와 리뷰 카드를 분리해 인지 부하를 줄였고, 복사 버튼을 하단 고정해 모바일 한 손 사용성을 높였습니다.
-
-### 4. 히스토리 화면 `/history`
-
-![History Screen](assets/history-screen.png)
-
-- 기능 설명
-  과거에 복사한 리뷰를 다시 열람, 복사, 삭제할 수 있습니다.
-- 사용자 시나리오
-  사용자는 이전에 생성한 리뷰를 빠르게 재사용하거나, 필요 없는 기록을 삭제합니다.
-- 핵심 UI/UX 포인트
-  카드 확장 구조와 길이별 미니 탭으로 재탐색 비용을 줄였고, 로컬 저장 기반이라 로그인 없이도 바로 동작합니다.
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><b>1. 홈 <code>/</code></b></td>
+      <td align="center"><b>2. 처리 화면 <code>/processing</code></b></td>
+      <td align="center"><b>3. 결과 화면 <code>/result</code></b></td>
+      <td align="center"><b>4. 히스토리 <code>/history</code></b></td>
+    </tr>
+    <tr>
+      <td><img src="assets/home-screen.png" width="200" alt="Home Screen" /></td>
+      <td><img src="assets/processing-screen.png" width="200" alt="Processing Screen" /></td>
+      <td><img src="assets/result-screen.png" width="200" alt="Result Screen" /></td>
+      <td><img src="assets/history-screen.png" width="200" alt="History Screen" /></td>
+    </tr>
+    <tr>
+      <td align="center">사진 업로드 · 드래그 앤 드롭<br>모바일 카메라 촬영</td>
+      <td align="center">3단계 진행 상태 시각화<br>스캐너 라인 애니메이션</td>
+      <td align="center">리뷰 탭 전환 · 편집<br>재생성 · 복사</td>
+      <td align="center">복사 이력 재열람<br>로그인 없이 로컬 저장</td>
+    </tr>
+  </table>
+</div>
 
 ## 기술 스택
 
