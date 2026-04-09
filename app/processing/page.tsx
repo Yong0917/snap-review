@@ -22,7 +22,33 @@ export default function ProcessingPage() {
     setStatus,
     reset,
   } = useReceiptStore();
+  const [displayProgress, setDisplayProgress] = useState(0);
   const ranRef = useRef(false);
+
+  useEffect(() => {
+    if (status === "error") {
+      setDisplayProgress(100);
+      return;
+    }
+    if (status === "done") {
+      setDisplayProgress(100);
+      return;
+    }
+    if (currentStep < 2) {
+      setDisplayProgress(Math.round(((currentStep + 1) / 3) * 100));
+      return;
+    }
+    // Step 2 (API 대기 중): 70% → 97% 부드럽게 증가
+    setDisplayProgress(70);
+    const start = Date.now();
+    const id = setInterval(() => {
+      const elapsed = Date.now() - start;
+      const val = 70 + 27 * (1 - Math.exp(-elapsed / 8000));
+      setDisplayProgress(Math.round(val));
+      if (val >= 97) clearInterval(id);
+    }, 100);
+    return () => clearInterval(id);
+  }, [currentStep, status]);
 
   const run = useCallback(async () => {
     if (!imageFile) return;
@@ -84,7 +110,6 @@ export default function ProcessingPage() {
 
   const isError = status === "error";
   const errorMessage = useReceiptStore((s) => s.errorMessage);
-  const progress = isError ? 100 : ((currentStep + 1) / 3) * 100;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-5 bg-background">
@@ -228,16 +253,16 @@ export default function ProcessingPage() {
                 isError ? "text-destructive" : "text-primary"
               }`}
             >
-              {isError ? "실패" : `${Math.round(progress)}%`}
+              {isError ? "실패" : `${displayProgress}%`}
             </span>
           </div>
           <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
             <div
-              className={`h-full rounded-full transition-all duration-700 ease-out ${
+              className={`h-full rounded-full transition-all duration-300 ease-out ${
                 isError ? "bg-destructive" : "bg-primary"
               }`}
               style={{
-                width: `${progress}%`,
+                width: `${displayProgress}%`,
                 boxShadow: isError ? "none" : "0 0 8px 1px color-mix(in oklch, var(--primary) 50%, transparent)",
               }}
             />
