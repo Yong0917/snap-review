@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Serif_Display, Gowun_Batang, Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -30,11 +30,26 @@ const notoSansKR = Noto_Sans_KR({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#c85520",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
   title: "SnapReview — 사진으로 리뷰 완성",
   description:
     "음식, 공간, 제품 사진을 올리면 AI가 리뷰를 써드립니다. 네이버·카카오·구글 어디에나 바로 붙여넣기.",
   keywords: ["리뷰", "사진 리뷰", "AI 리뷰", "자동 리뷰 생성"],
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "SnapReview",
+  },
   openGraph: {
     title: "SnapReview — 사진으로 리뷰 완성",
     description:
@@ -61,7 +76,12 @@ export default function RootLayout({
       className={`${dmSerif.variable} ${gowunBatang.variable} ${notoSansKR.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background">
-        <main className="flex-1 pb-20">{children}</main>
+        <main
+          className="flex-1 pb-20"
+          style={{ paddingBottom: "calc(5rem + env(safe-area-inset-bottom))" }}
+        >
+          {children}
+        </main>
         <BottomNav />
         <FloatingButton />
         <Toaster position="bottom-center" />

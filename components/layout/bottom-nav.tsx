@@ -16,7 +16,10 @@ export default function BottomNav() {
   if (pathname === "/processing" || pathname === "/result") return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border/60">
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border/60"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
       <div className="max-w-md mx-auto flex">
         {navItems.map(({ href, label, icon: Icon }) => {
           const active = pathname === href;
