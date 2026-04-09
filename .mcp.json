@@ -30,7 +30,7 @@
         "/Users/yong/Documents/Yong-project/mcp-shrimp-task-manager/dist/index.js"
       ],
       "env": {
-        "DATA_DIR": "/Users/yong/Documents/Yong-project/household-book-app/shrimp_data",
+        "DATA_DIR": "/Users/yong/Documents/Yong-project/snap-review/shrimp_data",
         "TEMPLATES_USE": "en",
         "ENABLE_GUI": "true"
       }
