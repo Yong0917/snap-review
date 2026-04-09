@@ -9,8 +9,11 @@ const JPEG_QUALITY = 0.85;
 export async function prepareImageFile(file: File): Promise<File> {
   let blob: Blob = file;
 
-  // HEIC/HEIF는 heic2any로 먼저 변환
-  if (isHeicFile(file)) {
+  // HEIC/HEIF 변환:
+  // iOS WebKit은 HEIC를 네이티브 지원하므로 canvas가 직접 디코딩 가능.
+  // heic2any(WASM)는 iOS에서 JIT 제한으로 실패하므로 건너뜀.
+  // 비iOS 브라우저(Chrome, Firefox 등)는 HEIC 미지원 → heic2any로 변환.
+  if (isHeicFile(file) && !isIOSWebKit()) {
     const heic2any = (await import("heic2any")).default;
     const converted = await heic2any({ blob: file, toType: "image/jpeg", quality: JPEG_QUALITY });
     blob = Array.isArray(converted) ? converted[0] : converted;
@@ -25,6 +28,16 @@ export async function prepareImageFile(file: File): Promise<File> {
     : `${baseName}.jpg`;
 
   return new File([resized], newName, { type: "image/jpeg" });
+}
+
+/** iOS Safari / 모든 iOS 브라우저(WebKit 기반) 여부 감지 */
+function isIOSWebKit(): boolean {
+  if (typeof navigator === "undefined") return false;
+  // iPad Pro는 desktop mode에서 platform이 MacIntel이므로 maxTouchPoints로 구분
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  );
 }
 
 function isHeicFile(file: File): boolean {

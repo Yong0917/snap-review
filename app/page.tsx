@@ -302,7 +302,7 @@ export default function HomePage() {
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/jpeg,image/jpg,image/png,image/heic,image/heif"
+        accept="image/*"
         className="hidden"
         onChange={handleInputChange}
       />
