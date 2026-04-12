@@ -3,6 +3,7 @@ export interface ExtractedInfo {
   category: string;
   keyDetails: string;
   moodAndContext: string;
+  tags: string[];
 }
 
 export type ReviewLength = "short" | "medium" | "detail";

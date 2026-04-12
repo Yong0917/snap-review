@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft, Copy, Check, RefreshCw, Pencil, CheckCheck,
-  Store, Calendar, ShoppingBag, Receipt,
+  Store, Calendar, ShoppingBag, Receipt, Hash, X, Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -28,7 +28,8 @@ export default function ResultPage() {
   const { extractedInfo, reviews, sessionId, updateReviews, reset } = useReceiptStore();
   const { addItem } = useHistoryStore();
 
-  const initialInfo: ExtractedInfo = extractedInfo ?? mockOcrSamples[0];
+  const _baseInfo = extractedInfo ?? mockOcrSamples[0];
+  const initialInfo: ExtractedInfo = { ..._baseInfo, tags: _baseInfo.tags ?? [] };
   const initialReviews: GeneratedReviews = reviews ?? mockReviewSets[0];
 
   const [tab, setTab] = useState<ReviewType>("medium");
@@ -37,7 +38,11 @@ export default function ResultPage() {
   const [ocrInfo, setOcrInfo] = useState<ExtractedInfo>({ ...initialInfo });
   const [editingField, setEditingField] = useState<keyof ExtractedInfo | null>(null);
   const [copied, setCopied] = useState(false);
+  const [tagsCopied, setTagsCopied] = useState(false);
+  const [addingTag, setAddingTag] = useState(false);
+  const [newTagInput, setNewTagInput] = useState("");
   const [regenerating, setRegenerating] = useState(false);
+  const tagInputRef = useRef<HTMLInputElement>(null);
   const [savedId] = useState(() => crypto.randomUUID());
   const fieldInputRef = useRef<HTMLInputElement>(null);
 
@@ -46,6 +51,12 @@ export default function ResultPage() {
       fieldInputRef.current.focus();
     }
   }, [editingField]);
+
+  useEffect(() => {
+    if (addingTag && tagInputRef.current) {
+      tagInputRef.current.focus();
+    }
+  }, [addingTag]);
 
   const currentReview = reviewMap[tab];
 
@@ -100,6 +111,31 @@ export default function ResultPage() {
 
   const handleOcrFieldSave = () => {
     setEditingField(null);
+  };
+
+  const handleTagDelete = (idx: number) => {
+    setOcrInfo((prev) => ({ ...prev, tags: prev.tags.filter((_, i) => i !== idx) }));
+  };
+
+  const handleTagAdd = () => {
+    const raw = newTagInput.trim();
+    if (!raw) { setAddingTag(false); setNewTagInput(""); return; }
+    const tag = raw.startsWith("#") ? raw : `#${raw}`;
+    setOcrInfo((prev) => ({ ...prev, tags: [...prev.tags, tag].slice(0, 20) }));
+    setNewTagInput("");
+    setAddingTag(false);
+  };
+
+  const handleTagsCopy = async () => {
+    if (!ocrInfo.tags.length) return;
+    try {
+      await navigator.clipboard.writeText(ocrInfo.tags.join(" "));
+      setTagsCopied(true);
+      setTimeout(() => setTagsCopied(false), 2200);
+      toast.success("태그가 복사됐어요!");
+    } catch {
+      toast.error("복사에 실패했습니다.");
+    }
   };
 
   const tabLabel: Record<ReviewType, string> = {
@@ -205,6 +241,79 @@ export default function ResultPage() {
                 </button>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* ── Tags ── */}
+        <section className="animate-fade-up delay-75">
+          <div className="flex items-center justify-between mb-2.5">
+            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.14em]">
+              SNS 태그
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-muted-foreground/60 tabular-nums">
+                {ocrInfo.tags.length}/20
+              </span>
+              <button
+                onClick={handleTagsCopy}
+                disabled={!ocrInfo.tags.length}
+                className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary transition-colors disabled:opacity-30"
+              >
+                {tagsCopied ? <Check size={10} /> : <Copy size={10} />}
+                {tagsCopied ? "복사됨" : "복사"}
+              </button>
+            </div>
+          </div>
+          <div className="rounded-xl border border-border shadow-sm bg-card p-3">
+            <div className="flex flex-wrap gap-1.5">
+              {ocrInfo.tags.map((tag, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/8 border border-primary/15 text-[12px] font-medium text-primary"
+                >
+                  {tag}
+                  <button
+                    onClick={() => handleTagDelete(idx)}
+                    className="text-primary/40 hover:text-primary transition-colors ml-0.5"
+                    aria-label="태그 삭제"
+                  >
+                    <X size={10} />
+                  </button>
+                </span>
+              ))}
+
+              {addingTag ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-primary/40 bg-primary/5">
+                  <Hash size={10} className="text-primary/60 shrink-0" />
+                  <input
+                    ref={tagInputRef}
+                    value={newTagInput}
+                    onChange={(e) => setNewTagInput(e.target.value)}
+                    onBlur={handleTagAdd}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleTagAdd();
+                      if (e.key === "Escape") { setAddingTag(false); setNewTagInput(""); }
+                    }}
+                    placeholder="태그 입력"
+                    className="text-[12px] font-medium bg-transparent outline-none w-16 text-primary placeholder:text-muted-foreground/50"
+                  />
+                </span>
+              ) : ocrInfo.tags.length < 20 ? (
+                <button
+                  onClick={() => setAddingTag(true)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-dashed border-border text-[12px] text-muted-foreground/60 hover:border-primary/40 hover:text-primary transition-colors"
+                >
+                  <Plus size={10} />
+                  추가
+                </button>
+              ) : null}
+
+              {ocrInfo.tags.length === 0 && !addingTag && (
+                <span className="text-[12px] text-muted-foreground/50 py-0.5">
+                  태그가 없습니다
+                </span>
+              )}
+            </div>
           </div>
         </section>
 

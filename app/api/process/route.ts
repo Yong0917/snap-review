@@ -11,7 +11,8 @@ const PROMPT = `다음 이미지를 분석하여 아래 JSON 형식으로만 응
     "subjectName": "사진의 핵심 대상, 장소, 음식, 제품명 또는 장면 이름",
     "category": "음식/카페, 디저트, 공간, 전자기기, 패션, 뷰티, 라이프스타일 등 간단한 분류",
     "keyDetails": "사진에서 눈에 띄는 특징 2~4개를 쉼표로 구분",
-    "moodAndContext": "사진의 분위기, 사용감, 상황을 한 문장으로 요약"
+    "moodAndContext": "사진의 분위기, 사용감, 상황을 한 문장으로 요약",
+    "tags": ["#태그1", "#태그2", "#태그3", "#태그4", "#태그5", "#태그6", "#태그7", "#태그8", "#태그9", "#태그10", "#태그11", "#태그12", "#태그13", "#태그14", "#태그15", "#태그16", "#태그17", "#태그18", "#태그19", "#태그20"]
   },
   "reviews": {
     "short": "실제 사용/방문/시식 후기를 떠올리게 하는 자연스러운 한국어 리뷰 (40~60자)",
@@ -25,6 +26,8 @@ const PROMPT = `다음 이미지를 분석하여 아래 JSON 형식으로만 응
 - 보이는 정보만 바탕으로 작성하고, 확인할 수 없는 브랜드명이나 가격은 지어내지 말 것
 - 대상이 명확하지 않더라도 가장 핵심으로 보이는 장면 기준으로 subjectName을 작성할 것
 - 리뷰는 네이버·카카오·구글 후기처럼 자연스럽고 과장되지 않게 작성
+- tags는 사진 대상·분위기·카테고리를 반영한 SNS용 해시태그 정확히 20개 (# 포함, 공백 없이)
+- tags는 네이버·카카오·인스타그램에 바로 붙여넣을 수 있도록 자연스러운 한국어 태그로 작성 (영문 혼용 가능)
 - 영수증, 계산서, 카드전표 이미지인 경우: 영수증 자체나 결제 내역이 아닌, 구매한 상품명 또는 방문한 가게/식당을 리뷰 대상(subjectName)으로 삼을 것
 - 영수증, 계산서, 카드전표 이미지인 경우: keyDetails는 메뉴명·상품명·수량 위주로, moodAndContext는 방문/구매 상황을 추정해서 작성할 것. 금액·카드번호·날짜는 언급하지 말 것`;
 
@@ -88,6 +91,7 @@ export async function POST(request: NextRequest) {
       category: parsed.extracted?.category ?? "기타",
       keyDetails: parsed.extracted?.keyDetails ?? "핵심 특징을 파악하지 못함",
       moodAndContext: parsed.extracted?.moodAndContext ?? "분위기 정보를 파악하지 못함",
+      tags: Array.isArray(parsed.extracted?.tags) ? parsed.extracted.tags.slice(0, 20) : [],
     };
     const reviews: GeneratedReviews = {
       short: parsed.reviews?.short ?? "리뷰를 생성하지 못했습니다.",
