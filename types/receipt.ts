@@ -12,6 +12,7 @@ export interface GeneratedReviews {
   short: string;
   medium: string;
   detail: string;
+  captions: string[];
 }
 
 export interface ReviewHistory {

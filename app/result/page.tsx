@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft, Copy, Check, RefreshCw, Pencil, CheckCheck,
-  Store, Calendar, ShoppingBag, Receipt, Hash, X, Plus,
+  Store, Calendar, ShoppingBag, Receipt, Hash, X, Plus, Video,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -42,6 +42,8 @@ export default function ResultPage() {
   const [addingTag, setAddingTag] = useState(false);
   const [newTagInput, setNewTagInput] = useState("");
   const [regenerating, setRegenerating] = useState(false);
+  const [copiedCaptionIdx, setCopiedCaptionIdx] = useState<number | null>(null);
+  const [captionsCopied, setCaptionsCopied] = useState(false);
   const tagInputRef = useRef<HTMLInputElement>(null);
   const [savedId] = useState(() => crypto.randomUUID());
   const fieldInputRef = useRef<HTMLInputElement>(null);
@@ -124,6 +126,30 @@ export default function ResultPage() {
     setOcrInfo((prev) => ({ ...prev, tags: [...prev.tags, tag].slice(0, 20) }));
     setNewTagInput("");
     setAddingTag(false);
+  };
+
+  const handleCaptionCopy = async (caption: string, idx: number) => {
+    try {
+      await navigator.clipboard.writeText(caption);
+      setCopiedCaptionIdx(idx);
+      setTimeout(() => setCopiedCaptionIdx(null), 2200);
+      toast.success("자막이 복사됐어요!");
+    } catch {
+      toast.error("복사에 실패했습니다.");
+    }
+  };
+
+  const handleAllCaptionsCopy = async () => {
+    const captions = reviewMap.captions ?? [];
+    if (!captions.length) return;
+    try {
+      await navigator.clipboard.writeText(captions.join("\n"));
+      setCaptionsCopied(true);
+      setTimeout(() => setCaptionsCopied(false), 2200);
+      toast.success("자막 전체가 복사됐어요!");
+    } catch {
+      toast.error("복사에 실패했습니다.");
+    }
   };
 
   const handleTagsCopy = async () => {
@@ -316,6 +342,57 @@ export default function ResultPage() {
             </div>
           </div>
         </section>
+
+        {/* ── Short-form Captions ── */}
+        {(reviewMap.captions?.length ?? 0) > 0 && (
+          <section className="animate-fade-up delay-100">
+            <div className="flex items-center justify-between mb-2.5">
+              <div className="flex items-center gap-1.5">
+                <Video size={11} className="text-muted-foreground" />
+                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.14em]">
+                  숏폼 자막 추천
+                </p>
+              </div>
+              <button
+                onClick={handleAllCaptionsCopy}
+                disabled={!reviewMap.captions?.length}
+                className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary transition-colors disabled:opacity-30"
+              >
+                {captionsCopied ? <Check size={10} /> : <Copy size={10} />}
+                {captionsCopied ? "복사됨" : "전체 복사"}
+              </button>
+            </div>
+            <div className="rounded-xl border border-border shadow-sm bg-card overflow-hidden">
+              {(reviewMap.captions ?? []).map((caption, idx) => (
+                <div
+                  key={idx}
+                  className={`flex items-center gap-3 px-4 py-3 ${
+                    idx < (reviewMap.captions?.length ?? 0) - 1 ? "border-b border-border/50" : ""
+                  } ${regenerating ? "opacity-40" : ""}`}
+                >
+                  <span className="text-[10px] font-bold text-muted-foreground/50 tabular-nums w-4 shrink-0">
+                    {idx + 1}
+                  </span>
+                  <span className="flex-1 text-[13px] font-medium text-foreground leading-snug">
+                    {regenerating ? "자막을 생성하고 있어요..." : caption}
+                  </span>
+                  <button
+                    onClick={() => handleCaptionCopy(caption, idx)}
+                    disabled={regenerating}
+                    className="shrink-0 text-muted-foreground/40 hover:text-primary transition-colors p-1 disabled:opacity-30"
+                    aria-label="자막 복사"
+                  >
+                    {copiedCaptionIdx === idx ? (
+                      <Check size={12} className="text-emerald-500" />
+                    ) : (
+                      <Copy size={12} />
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── Review Tabs ── */}
         <section className="flex-1 animate-fade-up delay-150">
