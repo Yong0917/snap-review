@@ -114,34 +114,17 @@ export default function ProcessingPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-5 bg-background">
 
-      {/* Ambient background glow */}
-      <div
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          background: isError
-            ? "radial-gradient(ellipse 60% 50% at 50% 40%, color-mix(in oklch, var(--destructive) 6%, transparent), transparent)"
-            : "radial-gradient(ellipse 70% 55% at 50% 38%, color-mix(in oklch, var(--primary) 8%, transparent), transparent)",
-        }}
-      />
-
       <div className="w-full max-w-xs relative">
 
         {/* ── Receipt + Scanner ── */}
         <div className="relative mx-auto w-44 h-56 mb-10">
-          {/* Outer glow */}
-          <div
-            className={`absolute inset-[-10px] rounded-[24px] blur-xl pointer-events-none transition-colors duration-500 ${
-              isError ? "bg-destructive/6" : "bg-primary/8 animate-progress-glow"
-            }`}
-          />
-          <div className="relative w-full h-full rounded-2xl receipt-lines bg-card border border-border/80 shadow-2xl overflow-hidden">
+          <div className="relative w-full h-full rounded-2xl receipt-lines bg-card border border-border overflow-hidden shadow-sm">
             {!isError && (
               <div
                 className="animate-scan-line"
                 style={{
                   background:
-                    "linear-gradient(to right, transparent 0%, color-mix(in oklch, var(--primary) 65%, transparent) 35%, var(--primary) 50%, color-mix(in oklch, var(--primary) 65%, transparent) 65%, transparent 100%)",
-                  boxShadow: "0 0 12px 3px color-mix(in oklch, var(--primary) 35%, transparent)",
+                    "linear-gradient(to right, transparent 0%, color-mix(in oklch, var(--primary) 30%, transparent) 35%, color-mix(in oklch, var(--primary) 45%, transparent) 50%, color-mix(in oklch, var(--primary) 30%, transparent) 65%, transparent 100%)",
                 }}
               />
             )}
@@ -155,41 +138,26 @@ export default function ProcessingPage() {
               ))}
             </div>
           </div>
-
-          {/* Corner markers */}
-          {[
-            "top-0 left-0 border-t-2 border-l-2 rounded-tl-md",
-            "top-0 right-0 border-t-2 border-r-2 rounded-tr-md",
-            "bottom-0 left-0 border-b-2 border-l-2 rounded-bl-md",
-            "bottom-0 right-0 border-b-2 border-r-2 rounded-br-md",
-          ].map((cls, i) => (
-            <div
-              key={i}
-              className={`absolute w-4 h-4 transition-colors duration-500 ${
-                isError ? "border-destructive/45" : "border-primary/55"
-              } ${cls}`}
-            />
-          ))}
         </div>
 
         {/* ── Title ── */}
-        <div className="text-center mb-7 animate-fade-up">
+        <div className="text-center mb-8 animate-fade-up">
           {isError ? (
             <>
-              <h1 className="font-serif font-bold text-2xl text-destructive mb-1.5">
+              <h1 className="font-sans font-bold text-display text-destructive mb-2 tracking-tight">
                 인식 실패
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-meta text-muted-foreground">
                 {errorMessage ?? "처리 중 오류가 발생했습니다."}
               </p>
             </>
           ) : (
             <>
-              <h1 className="font-serif font-bold text-2xl text-foreground mb-1.5">
+              <h1 className="font-sans font-bold text-display text-foreground mb-2 tracking-tight">
                 {STEP_LABELS[currentStep]}
                 <span className="animate-progress-glow">...</span>
               </h1>
-              <p className="text-sm text-muted-foreground">잠시만 기다려주세요</p>
+              <p className="text-meta text-muted-foreground">잠시만 기다려주세요</p>
             </>
           )}
         </div>
@@ -208,10 +176,10 @@ export default function ProcessingPage() {
                   failed
                     ? "border-destructive/30 bg-destructive/5"
                     : active
-                    ? "border-primary/35 bg-primary/6 shadow-sm shadow-primary/10"
+                    ? "border-primary/40 bg-primary/5"
                     : done
                     ? "border-border bg-muted/25"
-                    : "border-border/40 bg-background opacity-30"
+                    : "border-hairline bg-background opacity-35"
                 }`}
               >
                 {failed ? (
@@ -224,7 +192,7 @@ export default function ProcessingPage() {
                   <div className="w-[18px] h-[18px] rounded-full border-2 border-border/60 shrink-0" />
                 )}
                 <span
-                  className={`text-sm font-medium flex-1 ${
+                  className={`text-meta font-medium flex-1 ${
                     failed
                       ? "text-destructive"
                       : active
@@ -237,7 +205,7 @@ export default function ProcessingPage() {
                   {label}
                 </span>
                 {done && (
-                  <span className="text-[11px] text-primary/60 font-semibold">완료</span>
+                  <span className="text-eyebrow text-primary/60 font-semibold">완료</span>
                 )}
               </div>
             );
@@ -247,24 +215,21 @@ export default function ProcessingPage() {
         {/* ── Progress bar ── */}
         <div className="animate-fade-up delay-225">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-muted-foreground">진행률</span>
+            <span className="text-caption text-muted-foreground">진행률</span>
             <span
-              className={`text-xs font-bold tabular-nums ${
+              className={`text-caption font-semibold tabular-nums ${
                 isError ? "text-destructive" : "text-primary"
               }`}
             >
               {isError ? "실패" : `${displayProgress}%`}
             </span>
           </div>
-          <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+          <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-300 ease-out ${
                 isError ? "bg-destructive" : "bg-primary"
               }`}
-              style={{
-                width: `${displayProgress}%`,
-                boxShadow: isError ? "none" : "0 0 8px 1px color-mix(in oklch, var(--primary) 50%, transparent)",
-              }}
+              style={{ width: `${displayProgress}%` }}
             />
           </div>
         </div>
@@ -274,7 +239,7 @@ export default function ProcessingPage() {
             <button
               onClick={handleRetry}
               disabled={isRetrying || !imageFile}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-body font-semibold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60"
             >
               {isRetrying ? (
                 <>
@@ -287,7 +252,7 @@ export default function ProcessingPage() {
             </button>
             <button
               onClick={handleBackHome}
-              className="flex w-full items-center justify-center rounded-2xl border border-border py-3.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              className="flex w-full items-center justify-center rounded-xl border border-border py-3.5 text-body font-medium text-foreground transition-colors hover:bg-muted"
             >
               홈으로 돌아가기
             </button>

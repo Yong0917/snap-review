@@ -59,22 +59,13 @@ export default function FloatingButton() {
       <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
         <div className="max-w-md mx-auto relative h-16">
           <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
-
-            {/* Pulse rings */}
-            <span className="absolute inset-0 rounded-full bg-primary/20 animate-pulse-ring" />
-            <span
-              className="absolute inset-0 rounded-full bg-primary/12 animate-pulse-ring"
-              style={{ animationDelay: "0.8s" }}
-            />
-
-            {/* FAB */}
             <button
               onClick={() => !converting && fileInputRef.current?.click()}
               disabled={converting}
-              className="relative w-[52px] h-[52px] rounded-full text-primary-foreground flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 disabled:opacity-70 disabled:pointer-events-none"
+              className="relative w-[52px] h-[52px] rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 disabled:opacity-70 disabled:pointer-events-none"
               style={{
-                background: "linear-gradient(145deg, #bf4315 0%, #d96028 60%, #c85020 100%)",
-                boxShadow: "0 4px 20px -2px color-mix(in oklch, var(--primary) 45%, transparent), 0 2px 8px -2px rgba(0,0,0,0.2)",
+                boxShadow:
+                  "0 6px 16px -4px oklch(0 0 0 / 0.18), 0 1px 3px oklch(0 0 0 / 0.10)",
               }}
               aria-label="사진 업로드"
             >
@@ -83,7 +74,6 @@ export default function FloatingButton() {
                 : <Camera size={21} strokeWidth={2} />
               }
             </button>
-
           </div>
         </div>
       </div>

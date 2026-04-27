@@ -17,7 +17,7 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/50 shadow-[0_-4px_24px_-4px_rgba(0,0,0,0.10)]"
+      className="fixed bottom-0 left-0 right-0 z-40 border-t border-hairline"
       style={{
         paddingBottom: "env(safe-area-inset-bottom)",
         background: "color-mix(in oklch, var(--background) 88%, transparent)",
@@ -33,25 +33,23 @@ export default function BottomNav() {
               key={href}
               href={href}
               className={cn(
-                "flex-1 flex flex-col items-center gap-1 py-3.5 text-[11px] font-medium transition-all duration-200 relative",
+                "flex-1 flex flex-col items-center gap-1 py-3.5 text-eyebrow font-medium transition-colors duration-200 relative",
                 active ? "text-primary" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {/* Active indicator pill */}
               {active && (
-                <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-[2.5px] rounded-full bg-primary" />
+                <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-[2px] rounded-full bg-primary" />
               )}
 
-              {/* Icon with active background */}
               <span
                 className={cn(
-                  "relative w-9 h-7 flex items-center justify-center rounded-xl transition-all duration-200",
+                  "relative w-9 h-7 flex items-center justify-center rounded-lg transition-colors duration-200",
                   active ? "bg-primary/10" : "hover:bg-muted/60"
                 )}
               >
                 <Icon
                   size={20}
-                  strokeWidth={active ? 2.3 : 1.8}
+                  strokeWidth={active ? 2.2 : 1.7}
                   className="transition-all"
                 />
               </span>
