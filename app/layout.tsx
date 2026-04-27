@@ -1,32 +1,24 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Serif_Display, Gowun_Batang, Noto_Sans_KR } from "next/font/google";
+import { Instrument_Serif } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import BottomNav from "@/components/layout/bottom-nav";
 import FloatingButton from "@/components/layout/floating-button";
 
-/* Brand logo — Latin elegant serif */
-const dmSerif = DM_Serif_Display({
+const pretendard = localFont({
+  src: "../public/fonts/PretendardVariable.woff2",
+  variable: "--font-pretendard",
+  weight: "45 920",
+  style: "normal",
+  display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
   weight: "400",
   style: ["normal", "italic"],
   subsets: ["latin"],
-  variable: "--font-dm-serif",
-  display: "swap",
-});
-
-/* Korean editorial headings */
-const gowunBatang = Gowun_Batang({
-  weight: ["400", "700"],
-  subsets: ["latin"],
-  variable: "--font-gowun",
-  display: "swap",
-});
-
-/* Korean body / UI text */
-const notoSansKR = Noto_Sans_KR({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-noto-kr",
+  variable: "--font-instrument",
   display: "swap",
 });
 
@@ -73,9 +65,9 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${dmSerif.variable} ${gowunBatang.variable} ${notoSansKR.variable} h-full antialiased`}
+      className={`${pretendard.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background">
+      <body className="min-h-full flex flex-col bg-background font-sans">
         <main
           className="flex-1 pb-20"
           style={{ paddingBottom: "calc(5rem + env(safe-area-inset-bottom))" }}
